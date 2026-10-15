@@ -84,6 +84,12 @@ npm test        # unit tests (node --test)
 
 Tested in Obsidian 1.14.4 (Flatpak, Linux).
 
+## Disclosures
+
+- **Network use:** none.
+- **Files outside your vault:** none. Reminders use Obsidian notices and, if you have allowed them, your system's notifications.
+- **No** account, payment, ads, telemetry or self-updating. The plugin only reads and edits Markdown notes in your vault.
+
 ## Support
 
 If this saves you time, you can [buy me a coffee](https://www.paypal.com/donate/?hosted_button_id=H4SCC24R8KS4A).
