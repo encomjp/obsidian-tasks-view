@@ -6,7 +6,7 @@ back to the notes as plain Markdown. Works on desktop and mobile.
 
 <a href="https://www.paypal.com/donate/?hosted_button_id=H4SCC24R8KS4A"><img src="https://img.shields.io/badge/%E2%98%95_Buy_Me_a_Coffee-PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white" alt="Buy me a coffee" height="36" /></a>
 
-![The Today view: overdue and due tasks grouped by time](docs/today.png)
+![The panel with quick add, counts on the Today and Inbox chips, and tasks grouped by time](docs/quick-add.png)
 
 ## Features
 
@@ -19,6 +19,11 @@ back to the notes as plain Markdown. Works on desktop and mobile.
 - **Repeats:** `every day`, `every 2 weeks`, `every other month`, `every weekday`, `every monday`, `every year`.
   Completing a repeating task adds the next copy, dated from the task's own date.
 - **Reminders** for timed tasks: a notice and a system notification, plus a due count in the status bar.
+- **Quick add** from the box at the top of the panel, in plain words: `call mum tomorrow 6pm every week !high #home`.
+  Understands `today`, `tomorrow`, `next week`, `in 3 days`, weekday names, ISO dates, `5pm` / `17:30`,
+  `every …` repeats, `!high` priorities and `#tags`.
+- **Reschedule** from the right-click menu: due today, tomorrow, next week, push back a day, or remove the date.
+  The Today and Inbox chips show how many tasks they hold.
 - **Create and edit** tasks in a dialog (title, due, scheduled, start, repeat, priority, tags, note).
 - **Query language**, one condition per line, in the panel's filter box:
 
@@ -39,6 +44,8 @@ back to the notes as plain Markdown. Works on desktop and mobile.
   the next repeat.
 
 ![Filters expanded](docs/filters.png)
+
+![The Today view](docs/today.png)
 
 ## Install
 

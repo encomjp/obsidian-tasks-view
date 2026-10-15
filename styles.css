@@ -35,3 +35,6 @@
 .tv-note:hover { color: var(--text-accent); text-decoration: underline; }
 .tv-modal .setting-item-control .tv-time { margin-left: 6px; }
 .tv-modal .tv-wide { width: 100%; min-width: 220px; }
+
+.tv-quick { width: 100%; margin: 6px 0 4px; }
+.tv-chip-count { margin-left: 6px; opacity: .75; font-variant-numeric: tabular-nums; }

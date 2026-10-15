@@ -1,5 +1,7 @@
 import { ItemView, Menu, TFile, type WorkspaceLeaf } from "obsidian";
-import { daysBetween, localToday } from "./dates.ts";
+import { addDays, daysBetween, localToday, mondayOf } from "./dates.ts";
+import { fieldsOf } from "./edit.ts";
+import { parseQuickAdd } from "./natural.ts";
 import type { Priority, Task } from "./parse.ts";
 import { groupTasks, parseQuery, runQuery, type GroupKey } from "./query.ts";
 import { activePreset, PRESETS, stateToQuery, type ViewState } from "./state.ts";
@@ -33,6 +35,14 @@ export class TasksPanel extends ItemView {
     this.presetEl = head.createDiv({ cls: "tv-presets" });
     const add = head.createEl("button", { cls: "tv-add", text: "+", attr: { "aria-label": "New task" } });
     add.addEventListener("click", () => this.plugin.newTask());
+    const quick = this.contentEl.createEl("input", { type: "text", cls: "tv-quick", attr: { placeholder: "Quick add: call mum tomorrow 6pm every week !high #home" } });
+    quick.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" || !quick.value.trim()) return;
+      const fields = parseQuickAdd(quick.value, localToday());
+      if (!fields.description) return;
+      quick.value = "";
+      void this.plugin.store.add(this.plugin.settings.defaultNote, fields);
+    });
     this.controlsEl = this.contentEl.createDiv({ cls: "tv-controls" });
     this.warnEl = this.contentEl.createDiv({ cls: "tv-warn" });
     this.listEl = this.contentEl.createDiv({ cls: "tv-list" });
@@ -56,6 +66,10 @@ export class TasksPanel extends ItemView {
     const current = activePreset(s);
     for (const preset of PRESETS.slice(0, 4)) {
       const b = this.presetEl.createEl("button", { text: preset.label, cls: "tv-chip" + (current === preset.id ? " is-active" : "") });
+      if (preset.id === "today" || preset.id === "inbox") {
+        const n = this.presetCount(preset.apply);
+        if (n > 0) b.createSpan({ cls: "tv-chip-count", text: String(n) });
+      }
       b.addEventListener("click", () => this.change({ ...preset.apply, priority: "any", tag: "", search: "", raw: "", completed: preset.apply.completed ?? "any" }));
     }
     const more = this.presetEl.createEl("button", { text: "More", cls: "tv-chip" + (current === "open" || current === "all" || current === null ? " is-active" : "") });
@@ -88,6 +102,12 @@ export class TasksPanel extends ItemView {
     const raw = this.controlsEl.createEl("textarea", { cls: "tv-raw", attr: { rows: "3", placeholder: "Query, one line each, e.g.\ntag work\npriority is high\nsort by due reverse" } });
     raw.value = s.raw;
     raw.addEventListener("input", () => { this.plugin.view.raw = raw.value; this.plugin.saveViewState(); this.renderList(); });
+  }
+
+  private presetCount(apply: Partial<ViewState>): number {
+    const today = localToday();
+    const state: ViewState = { ...this.state, ...apply, priority: "any", tag: "", search: "", raw: "", completed: apply.completed ?? "any" };
+    return runQuery(this.plugin.store.all(), parseQuery(stateToQuery(state, today), today)).length;
   }
 
   private select(parent: HTMLElement, label: string, value: string, options: Record<string, string>, on: (v: string) => void) {
@@ -148,10 +168,28 @@ export class TasksPanel extends ItemView {
       menu.addItem((i) => i.setTitle("Edit…").setIcon("pencil").onClick(() => this.plugin.editTask(task)));
       menu.addItem((i) => i.setTitle("Open in note").setIcon("file-text").onClick(() => void this.openNote(task)));
       menu.addItem((i) => i.setTitle(task.done ? "Mark open" : "Mark done").setIcon("check").onClick(() => void this.plugin.store.toggle(task)));
+      if (!task.done) {
+        menu.addSeparator();
+        const to = (label: string, date: string | null) => menu.addItem((i) => i.setTitle(label).setIcon("calendar").onClick(() => void this.reschedule(task, date)));
+        to("Due today", today);
+        to("Due tomorrow", addDays(today, 1));
+        to("Due next week", addDays(mondayOf(today), 7));
+        if (task.due) {
+          to("Push back one day", addDays(task.due, 1));
+          to("Remove due date", null);
+        }
+      }
       menu.addSeparator();
       menu.addItem((i) => i.setTitle("Delete").setIcon("trash").onClick(() => void this.plugin.store.remove(task)));
       menu.showAtMouseEvent(e);
     });
+  }
+
+  private async reschedule(task: Task, date: string | null) {
+    const fields = fieldsOf(task);
+    fields.due = date;
+    if (!date) fields.dueTime = null;
+    await this.plugin.store.update(task, fields);
   }
 
   async openNote(task: Task) {
