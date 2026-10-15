@@ -1,6 +1,6 @@
 {
   "name": "obsidian-tasks-view",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A task panel for Obsidian notes: Today, Upcoming and Inbox views, filters, grouping, recurring tasks and reminders. Ported from Starnote.",
   "main": "main.js",
   "type": "module",
@@ -10,7 +10,13 @@
     "check": "tsc --noEmit",
     "test": "node --test tests/"
   },
-  "keywords": ["obsidian", "tasks", "todo", "recurring", "reminders"],
+  "keywords": [
+    "obsidian",
+    "tasks",
+    "todo",
+    "recurring",
+    "reminders"
+  ],
   "license": "MIT",
   "devDependencies": {
     "@codemirror/state": "^6.5.2",

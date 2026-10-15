@@ -63,14 +63,16 @@ interface Found {
 function findField(text: string, field: Field, allowTime: boolean): Found | null {
   const forms = FIELD_FORMS[field];
   const candidates: { from: number; to: number; date: string }[] = [];
-  const collect = (re: RegExp) => {
+  // `lead`: the pattern may start with one extra character (a word-boundary check without lookbehind).
+  const collect = (re: RegExp, lead = false) => {
     for (const m of text.matchAll(re)) {
       const date = m[1]!;
-      if (isValidDate(date)) candidates.push({ from: m.index!, to: m.index! + m[0].length, date });
+      const skip = lead && /^\W/.test(m[0]) ? 1 : 0;
+      if (isValidDate(date)) candidates.push({ from: m.index! + skip, to: m.index! + m[0].length, date });
     }
   };
   collect(new RegExp(`(?:${forms.emoji.join("|")})\\uFE0F?\\s*${DATE}`, "gu"));
-  collect(new RegExp(`(?<![\\w])${forms.keyword}\\s*:{1,2}\\s*${DATE}`, "gi"));
+  collect(new RegExp(`(?:^|\\W)${forms.keyword}\\s*:{1,2}\\s*${DATE}`, "gi"), true);
   if (forms.at) collect(new RegExp(`@${forms.keyword}\\(${DATE}\\)`, "gi"));
   if (candidates.length === 0) return null;
   const first = candidates.reduce((a, b) => (b.from < a.from ? b : a));
@@ -91,7 +93,7 @@ function cut(text: string, found: Found): string {
   return text.slice(0, found.from) + " " + text.slice(found.to);
 }
 
-const TAG = /(?<![\w#])#([\p{L}\p{N}_/-]*\p{L}[\p{L}\p{N}_/-]*)/gu;
+const TAG = /(^|[^\w#])#([\p{L}\p{N}_/-]*\p{L}[\p{L}\p{N}_/-]*)/gu;
 
 /** Parses one line; null when it is not a task. */
 export function parseTaskLine(raw: string, path = "", line = 1, heading: string | null = null): Task | null {
@@ -106,9 +108,9 @@ export function parseTaskLine(raw: string, path = "", line = 1, heading: string 
   }
 
   const tags: string[] = [];
-  rest = rest.replace(TAG, (_all, name: string) => {
+  rest = rest.replace(TAG, (_all, lead: string, name: string) => {
     if (!tags.includes(name)) tags.push(name);
-    return " ";
+    return lead + " ";
   });
 
   let recurrence: string | null = null;

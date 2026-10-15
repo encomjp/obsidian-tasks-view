@@ -28,11 +28,11 @@ export function parseQuickAdd(input: string, today: string): Pick<TaskFields, "d
   let m: RegExpExecArray | null;
 
   const tags: string[] = [];
-  for (const t of text.matchAll(/(?<=\s)#([\p{L}\p{N}_/-]*\p{L}[\p{L}\p{N}_/-]*)/gu)) tags.push(t[1]!);
-  text = text.replace(/(?<=\s)#([\p{L}\p{N}_/-]*\p{L}[\p{L}\p{N}_/-]*)/gu, " ");
+  for (const t of text.matchAll(/\s#([\p{L}\p{N}_/-]*\p{L}[\p{L}\p{N}_/-]*)/gu)) tags.push(t[1]!);
+  text = text.replace(/\s#([\p{L}\p{N}_/-]*\p{L}[\p{L}\p{N}_/-]*)/gu, " ");
 
   let priority: Priority | null = null;
-  ({ rest: text, match: m } = cut(text, /(?<=\s)!(highest|high|medium|low|lowest)(?=\s)/i));
+  ({ rest: text, match: m } = cut(text, /\s!(highest|high|medium|low|lowest)(?=\s)/i));
   if (m) priority = m[1]!.toLowerCase() as Priority;
 
   let recurrence: string | null = null;
