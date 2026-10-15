@@ -49,7 +49,11 @@ back to the notes as plain Markdown. Works on desktop and mobile.
 
 ## Install
 
-### Easiest: BRAT (installs and keeps it updated)
+### Obsidian directory
+
+Tasks View is listed in the official Obsidian plugin directory: [community.obsidian.md/plugins/tasks-view](https://community.obsidian.md/plugins/tasks-view). Install it from there, or from Settings → Community plugins → Browse once it appears for you.
+
+### BRAT (installs and keeps it updated)
 
 1. Install **BRAT** from Settings → Community plugins → Browse, and enable it.
 2. Run **BRAT: Add a beta plugin for testing** and enter `encomjp/obsidian-tasks-view`, or click
