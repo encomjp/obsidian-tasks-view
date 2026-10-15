@@ -1,0 +1,9 @@
+{
+  "id": "tasks-view",
+  "name": "Tasks View",
+  "version": "0.1.0",
+  "minAppVersion": "1.5.0",
+  "description": "A task panel with Today, Upcoming and Inbox views, filters, grouping, recurring tasks and reminders for timed tasks.",
+  "author": "encomjp",
+  "isDesktopOnly": false
+}
