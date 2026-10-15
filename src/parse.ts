@@ -68,7 +68,7 @@ function findField(text: string, field: Field, allowTime: boolean): Found | null
     for (const m of text.matchAll(re)) {
       const date = m[1]!;
       const skip = lead && /^\W/.test(m[0]) ? 1 : 0;
-      if (isValidDate(date)) candidates.push({ from: m.index! + skip, to: m.index! + m[0].length, date });
+      if (isValidDate(date)) candidates.push({ from: m.index + skip, to: m.index + m[0].length, date });
     }
   };
   collect(new RegExp(`(?:${forms.emoji.join("|")})\\uFE0F?\\s*${DATE}`, "gu"));
@@ -169,7 +169,7 @@ export function parseNote(text: string, path: string): Task[] {
   let heading: string | null = null;
   let fence: string | null = null;
   let i = 0;
-  if (/^﻿?---\s*$/.test(lines[0] ?? "")) {
+  if (/^\uFEFF?---\s*$/.test(lines[0] ?? "")) {
     const end = lines.findIndex((l, n) => n > 0 && /^(---|\.\.\.)\s*$/.test(l));
     if (end > 0) i = end + 1;
   }

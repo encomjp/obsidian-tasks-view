@@ -130,7 +130,7 @@ export class TasksPanel extends ItemView {
       this.listEl.createDiv({ cls: "tv-empty", text: this.plugin.store.all().length === 0 ? "No tasks yet. Write one as - [ ] Buy milk 📅 2026-10-20, or press +." : "Nothing matches." });
       return;
     }
-    const groups = groupTasks(tasks, s.group === "none" ? null : (s.group as GroupKey | "time"), today);
+    const groups = groupTasks(tasks, s.group === "none" ? null : s.group, today);
     for (const group of groups) {
       const section = this.listEl.createDiv({ cls: "tv-group" });
       if (group.title) {

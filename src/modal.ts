@@ -70,7 +70,7 @@ export class TaskModal extends Modal {
 
     const bar = new Setting(contentEl);
     if (this.task && this.onOpen2) bar.addButton((b) => b.setButtonText("Open in note").onClick(() => { this.close(); this.onOpen2!(); }));
-    if (this.task && this.onDelete) bar.addButton((b) => b.setButtonText("Delete").setWarning().onClick(() => { this.close(); this.onDelete!(); }));
+    if (this.task && this.onDelete) bar.addButton((b) => b.setButtonText("Delete").onClick(() => { this.close(); this.onDelete!(); }).buttonEl.addClass("mod-warning"));
     bar.addButton((b) => b.setButtonText("Cancel").onClick(() => this.close()));
     bar.addButton((b) => b.setButtonText(this.task ? "Save" : "Add task").setCta().onClick(() => this.save()));
   }
