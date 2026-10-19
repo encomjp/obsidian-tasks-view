@@ -99,3 +99,8 @@ If this saves you time, you can [buy me a coffee](https://www.paypal.com/donate/
 An independent project, ported from the tasks feature of Starnote. It is not affiliated with, endorsed by,
 or supported by Dynalist Inc. (Obsidian) or the authors of any other task plugin. Provided "as is" under the
 MIT license, without warranty; it edits your notes, so keep backups. See [LICENSE](LICENSE).
+
+
+---
+
+Made by [Adrian Kozlowski](https://adrian-kozlowski.de), IT specialist for systems integration and IT security in Mannheim. More projects on the [portfolio](https://adrian-kozlowski.de), and free browser games at [games.adrian-kozlowski.com](https://games.adrian-kozlowski.com).
