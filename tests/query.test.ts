@@ -67,6 +67,23 @@ test("'heading includes' matches the heading of the note", () => {
   assert.deepEqual(names(runQuery(tasks, parseQuery("heading includes chore", TODAY))), ["two"]);
 });
 
+test("'regex matches' and 'regex does not match' test a field against a JavaScript regex", () => {
+  const tasks = parseNote("# Plan\n- [ ] one\n## Chores 2026\n- [ ] two\n- [ ] none\n", "a.md");
+  const run = (query: string) => {
+    const q = parseQuery(query, TODAY);
+    return { out: names(runQuery(tasks, q)), warnings: q.warnings };
+  };
+  assert.deepEqual(run("heading regex matches /^Chores \\d{4}$/").out, ["two", "none"]);
+  assert.deepEqual(run("heading regex matches /chores/").out, []);
+  assert.deepEqual(run("heading regex matches /chores/i").out, ["two", "none"]);
+  assert.deepEqual(run("heading regex does not match /chores/i").out, ["one"]);
+  assert.deepEqual(run("description regex matches /^(one|two)$/").out, ["one", "two"]);
+  assert.deepEqual(run("heading regex matches /a/g").out, ["one"]);
+  const bad = run("heading regex matches /(/");
+  assert.equal(bad.warnings.length, 1);
+  assert.equal(bad.out.length, 3);
+});
+
 test("'tag' selects tasks carrying the tag, with or without #", () => {
   assert.deepEqual(run("tag x").out, ["f"]);
   assert.deepEqual(run("tag #a").out, ["h"]);

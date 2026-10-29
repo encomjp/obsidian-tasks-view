@@ -2,6 +2,7 @@
 // One instruction per line, `#` starts a comment:
 //   not done | done | no due date | due today | recurring | happens [date]
 //   due before|after <date> | done after <date> | path|description|heading includes <text>
+//   path|description|heading regex matches|does not match /<regex>/<flags>
 //   tag <name> | priority [is] <level> | sort by due|description|priority|path [reverse]
 //   group by filename|due|priority|status|tag|heading | limit <n>
 // <date> is today, tomorrow, yesterday or yyyy-MM-dd.
@@ -30,6 +31,10 @@ function resolveDate(word: string, today: string): string | null {
   if (w === "tomorrow") return addDays(today, 1);
   if (w === "yesterday") return addDays(today, -1);
   return isValidDate(w) ? w : null;
+}
+
+function fieldValue(t: Task, field: string): string {
+  return field === "path" ? t.path : field === "heading" ? t.heading ?? "" : t.description;
 }
 
 export function parseQuery(text: string, today: string): Query {
@@ -64,12 +69,23 @@ export function parseQuery(text: string, today: string): Query {
       else if (m[1] === "before") q.filters.push((t) => t.done && !!at(t) && at(t)! < when);
       else if (m[1] === "after") q.filters.push((t) => t.done && !!at(t) && at(t)! > when);
       else q.filters.push((t) => t.done && at(t) === when);
+    } else if ((m = /^(path|description|heading)\s+regex\s+(matches|does not match)\s+\/(.+)\/([a-z]*)$/i.exec(line))) {
+      const field = m[1]!.toLowerCase();
+      const negate = m[2]!.toLowerCase() !== "matches";
+      let re: RegExp;
+      try {
+        // Without g and y, test() keeps no state between tasks.
+        re = new RegExp(m[3]!, m[4]!.replace(/[gy]/g, ""));
+      } catch {
+        q.warnings.push(`Invalid regex in '${line}'.`);
+        continue;
+      }
+      q.filters.push((t) => re.test(fieldValue(t, field)) !== negate);
     } else if ((m = /^(path|description|heading)\s+(includes|does not include)\s+(.+)$/i.exec(line))) {
       const needle = m[3]!.toLowerCase();
       const field = m[1]!.toLowerCase();
       const negate = m[2]!.toLowerCase() !== "includes";
-      const value = (t: Task) => (field === "path" ? t.path : field === "heading" ? t.heading ?? "" : t.description).toLowerCase();
-      q.filters.push((t) => value(t).includes(needle) !== negate);
+      q.filters.push((t) => fieldValue(t, field).toLowerCase().includes(needle) !== negate);
     } else if ((m = /^tag(?:\s+includes)?\s+#?(\S+)$/i.exec(line))) {
       const want = m[1]!.toLowerCase();
       q.filters.push((t) => t.tags.some((tag) => tag.toLowerCase() === want));

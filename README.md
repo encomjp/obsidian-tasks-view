@@ -39,7 +39,8 @@ back to the notes as plain Markdown. Works on desktop and mobile.
   ```
 
   Also: `done`, `no due date`, `due today`, `due after`, `due on`, `done after`, `description includes`,
-  `heading includes`, `happens`, `recurring`.
+  `heading includes`, `happens`, `recurring`, and `heading|description|path regex matches /<regex>/`
+  (or `regex does not match`), which takes a JavaScript regex with optional flags such as `/chores/i`.
 - **Command** *Toggle task on this line* completes a task in the editor, stamping the done date and creating
   the next repeat.
 
